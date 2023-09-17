@@ -208,8 +208,11 @@ CMakeFiles/cosarch.dir/src/main.cpp.o: ../src/main.cpp \
   /usr/include/c++/11/bits/stl_uninitialized.h \
   /usr/include/c++/11/bits/stl_vector.h \
   /usr/include/c++/11/bits/stl_bvector.h \
-  /usr/include/c++/11/bits/vector.tcc
+  /usr/include/c++/11/bits/vector.tcc \
+  ../src/tokenization.hpp
 
+
+../src/tokenization.hpp:
 
 /usr/include/c++/11/bits/stl_bvector.h:
 
