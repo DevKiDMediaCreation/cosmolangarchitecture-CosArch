@@ -218,15 +218,6 @@ cosmolangarchitecture_IS_TOP_LEVEL:STATIC=ON
 //Value Computed by CMake
 cosmolangarchitecture_SOURCE_DIR:STATIC=/mnt/g/CosmolangProgrammingLanguageProjects/CosmolangArchitecture
 
-//Value Computed by CMake
-hydrogen_BINARY_DIR:STATIC=/mnt/g/CosmolangProgrammingLanguageProjects/CosmolangArchitecture/build
-
-//Value Computed by CMake
-hydrogen_IS_TOP_LEVEL:STATIC=ON
-
-//Value Computed by CMake
-hydrogen_SOURCE_DIR:STATIC=/mnt/g/CosmolangProgrammingLanguageProjects/CosmolangArchitecture
-
 
 ########################
 # INTERNAL cache entries

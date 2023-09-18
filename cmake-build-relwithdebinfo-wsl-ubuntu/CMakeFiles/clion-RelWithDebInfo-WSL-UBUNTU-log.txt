@@ -1,0 +1,4 @@
+C:\Windows\system32\wsl.exe --distribution Ubuntu --exec /bin/bash -c "export CMAKE_COLOR_DIAGNOSTICS=ON && export CLION_IDE=TRUE && export JETBRAINS_IDE=TRUE && cd /mnt/g/CosmolangProgrammingLanguageProjects/CosmolangArchitecture/cmake-build-relwithdebinfo-wsl-ubuntu && /usr/bin/cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -G 'CodeBlocks - Unix Makefiles' -S /mnt/g/CosmolangProgrammingLanguageProjects/CosmolangArchitecture -B /mnt/g/CosmolangProgrammingLanguageProjects/CosmolangArchitecture/cmake-build-relwithdebinfo-wsl-ubuntu"
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /mnt/g/CosmolangProgrammingLanguageProjects/CosmolangArchitecture/cmake-build-relwithdebinfo-wsl-ubuntu

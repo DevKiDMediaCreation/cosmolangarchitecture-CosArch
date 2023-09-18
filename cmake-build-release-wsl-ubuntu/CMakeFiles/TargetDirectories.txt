@@ -1,0 +1,3 @@
+/mnt/g/CosmolangProgrammingLanguageProjects/CosmolangArchitecture/cmake-build-release-wsl-ubuntu/CMakeFiles/cosarch.dir
+/mnt/g/CosmolangProgrammingLanguageProjects/CosmolangArchitecture/cmake-build-release-wsl-ubuntu/CMakeFiles/edit_cache.dir
+/mnt/g/CosmolangProgrammingLanguageProjects/CosmolangArchitecture/cmake-build-release-wsl-ubuntu/CMakeFiles/rebuild_cache.dir

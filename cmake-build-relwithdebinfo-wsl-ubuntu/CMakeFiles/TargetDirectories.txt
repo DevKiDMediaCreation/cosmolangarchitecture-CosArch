@@ -1,0 +1,3 @@
+/mnt/g/CosmolangProgrammingLanguageProjects/CosmolangArchitecture/cmake-build-relwithdebinfo-wsl-ubuntu/CMakeFiles/cosarch.dir
+/mnt/g/CosmolangProgrammingLanguageProjects/CosmolangArchitecture/cmake-build-relwithdebinfo-wsl-ubuntu/CMakeFiles/edit_cache.dir
+/mnt/g/CosmolangProgrammingLanguageProjects/CosmolangArchitecture/cmake-build-relwithdebinfo-wsl-ubuntu/CMakeFiles/rebuild_cache.dir
