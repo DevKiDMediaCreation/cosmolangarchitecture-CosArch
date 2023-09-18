@@ -1,0 +1,21 @@
+The Programming Language Research Group at the University of Tenten Academy is a group of
+ faculty, postdocs, and students interested in programming languages and related areas.
+ We meet weekly to discuss research papers and work in progress. We also host the Programming
+  Languages Seminar, which brings in speakers from other institutions.
+
+We are part of the Computer Science Department at the University of Tenten Academy.
+
+By using the Programming Language Research Lab, it is not allowed to use the following:
+- Use the Programming Language Research Lab for any illegal purpose.
+- Use the Programming Language Research Lab for any malicious purpose.
+- Use the Programming Language Research Lab for any commercial purpose.
+- Use the Programming Language Research Lab for any profit purpose.
+
+By using the Programming Language Research Lab, it is allowed to use the following:
+- Use the Programming Language Research Lab for any educational purpose.
+- Use the Programming Language Research Lab for any research purpose.
+- Use the Programming Language Research Lab for any non-commercial purpose.
+- Use the Programming Language Research Lab for any personal purpose.
+- Use the Programming Language Research Lab for any non-profit purpose.
+- Use the Programming Language Research Lab for any purpose that is not listed in the "not allowed" list.
+- Use the Programming Language Research Lab for data science and computer science research.
