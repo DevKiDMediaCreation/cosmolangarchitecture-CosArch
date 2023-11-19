@@ -1,29 +1,23 @@
 $$
 \begin{align}
-    [\text{exit}] &\to exit([\text{expr}])
-    \\
-    [\text{expr}] &\to \text{int\_lit}
+    [\text{Prog}] &\to [\text{Stmt}]^* \\
+    [\text{Stmt}] &\to
+    \begin{cases}
+        \text{exit}(\text{[Ident]}); \\
+        \text{let ident} = [\text{Expr}]
+    \end{cases}\\
+[Expr] &\to
+ \begin{cases}
+        \text{int\_lit} \\
+        \text{ident} \\
+        \text{[BinExpr]}
+    \end{cases}\\
+
+\text{[BinExpr]} &\to
+\begin{cases}
+\text{[Expr]} * \text{[Expr]} & prec=1\\
+
+\text{[Expr]} + \text{[Expr]} & prec= 0 \\
+\end{cases}
 \end{align}
 $$
-
-**Import modules:**
-$$
-\begin{align}
-    [\text{modules}] &\to modules([\text{argmt}])
-    \\
-    [\text{argmt}] &\to \text{params}
-    \\
-    [\text{params}] &\to mode
-    \\
-                    &\to execution
-                    \\
-                    &\to path
-                    \\
-                    &\to \text{relativPath in \%cosmospace\%}
-    \\
-    [\text{Include Language}] &\to incpl([\text{\%d-e 0xFaBczM - 0xZZZZZZ}]) \\
-    &\text{A-Z 1059382*253 Gigabyte of Source}
-
-\end{align}
-$$
-incpl == Include Programming Language Support
