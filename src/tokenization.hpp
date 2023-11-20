@@ -5,7 +5,7 @@
 
 
 enum class TokenType {
-    _return, exit, int_lit, semi, open_param, close_param, ident, let, eq
+    _return, exit, int_lit, semi, open_param, close_param, ident, let, eq, plus, minus, multi,
 };
 
 struct Token {
@@ -32,7 +32,7 @@ public:
                     tokens.push_back({.type = TokenType::exit});
                     buf.clear();
                     continue;
-                } else if (buf == "let" || buf== "var" || buf == "lit" || buf == "ident" || buf == "id") {
+                } else if (buf == "let" || buf == "var" || buf == "lit" || buf == "ident" || buf == "id") {
                     tokens.push_back({.type = TokenType::let});
                     buf.clear();
                     continue;
@@ -64,6 +64,10 @@ public:
             } else if (peek().value() == '=') {
                 consume();
                 tokens.push_back({.type = TokenType::eq});
+                continue;
+            } else if (peek().value() == '+') {
+                consume();
+                tokens.push_back({.type = TokenType::plus});
                 continue;
             } else if (std::isspace(peek().value())) {
                 consume();

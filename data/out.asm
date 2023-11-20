@@ -1,17 +1,34 @@
 global _start
 _start:
-	mov rax, 7
+	mov rax, 1
+	push rax
+	mov rax, 2
+	push rax
+	; Add
+	pop rax
+	pop rbx
+	add rax, rbx
 	push rax
 	mov rax, 8
 	push rax
-	mov rax, 9
-	push rax
-	mov rax, 256
-	push rax
-	; Call var: y
-	push QWORD [rsp + 16]
 	; Call var: x
-	push QWORD [rsp + 32]
+	push QWORD [rsp + 8]
+	; Call var: y
+	push QWORD [rsp + 8]
+	mov rax, 2
+	push rax
+	; Add
+	pop rax
+	pop rbx
+	add rax, rbx
+	push rax
+	; Add
+	pop rax
+	pop rbx
+	add rax, rbx
+	push rax
+	; Call var: z
+	push QWORD [rsp + 0]
 	; Exit by var.
 	mov rax, 60
 	pop rdi

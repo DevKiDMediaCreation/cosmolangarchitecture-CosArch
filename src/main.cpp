@@ -7,9 +7,8 @@
 #include <optional>
 #include <vector>
 
-#include "./parser.hpp"
-#include "./generation.hpp"
 
+#include "./generation.hpp"
 
 int main(int argc, char *argv[]) {
     std::cout << "Running Cosarch v0.0.1. Cosmolang Architecture Programming Language Research Labs" << std::endl;
