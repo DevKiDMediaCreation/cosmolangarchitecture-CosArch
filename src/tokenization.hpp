@@ -73,7 +73,7 @@ public:
                 consume();
                 continue;
             } else {
-                std::cerr << "Syntax error. This error msg is very helpfully." << std::endl;
+                std::cerr << "Syntax error. This error msg is very helpfully. : " << peek().value() << std::endl;
                 exit(EXIT_FAILURE);
             }
         }

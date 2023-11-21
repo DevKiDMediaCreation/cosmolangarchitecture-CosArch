@@ -6,11 +6,16 @@
 #include <sstream>
 #include <optional>
 #include <vector>
+#include <chrono>
 
 
 #include "./generation.hpp"
 
 int main(int argc, char *argv[]) {
+
+    // Start timer
+    auto start = std::chrono::high_resolution_clock::now();
+
     std::cout << "Running Cosarch v0.0.1. Cosmolang Architecture Programming Language Research Labs" << std::endl;
     if (argc != 2) {
         std::cerr << "Incorrect usage. Correct usage is..." << std::endl;
@@ -32,7 +37,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    system("rm -fr ../data && mkdir -p ../data");
+    if (!system("rm -fr ../data && mkdir -p ../data")) {} // Why? Because the IDE doesn't like only the system()
 
     Tokenizer tokenizer(std::move(contents));
     std::vector<Token> tokens = tokenizer.tokenize();
@@ -51,9 +56,14 @@ int main(int argc, char *argv[]) {
         file << generator.gen_prog();
     }
 
-    system("nasm -f elf64 ../data/out.asm -o ../data/out.o && ld ../data/out.o -o ../data/out");
+    if (system("nasm -f elf64 ../data/out.asm -o ../data/out.o && ld ../data/out.o -o ../data/out")) {}
 
     std::cout << "Compiling successfully. File build: " << argv[1] << std::endl;
+
+    // Calculate the time
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    std::cout << "Execution Time to Translate. Compiler Time: " << duration << "ms" << std::endl;
 
     return EXIT_SUCCESS;
 }

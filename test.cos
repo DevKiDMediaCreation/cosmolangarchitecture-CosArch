@@ -1,4 +1,6 @@
-let x = 1 + 2;
-let y = 8;
+let x = 1 + 2 + 3 + 4 + 5;
+let y = 8 + x;
+let u = y + x;
 let z = x + y + 2;
-exit(z);
+let t = z + u + x + y;
+exit(t);

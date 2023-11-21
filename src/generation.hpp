@@ -105,6 +105,12 @@ public:
         m_output << "\tmov rdi, 0\n";
         m_output << "\tsyscall\n";
         std::cout << "Executable code generation successfully is done." << std::endl;
+
+        std::cout << "Total size of output: " << m_output.str().size() << std::endl;
+        // Get the number of lines
+        // std::cout << "Total lines of output: " << std::count(m_output.str().begin(), m_output.str().end(), '\n')
+        //          << std::endl;
+
         return m_output.str();
     }
 
