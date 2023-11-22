@@ -15,11 +15,13 @@ int main(int argc, char *argv[]) {
 
     // Start timer
     auto start = std::chrono::high_resolution_clock::now();
+    std::string output = "../data";
 
-    std::cout << "Running Cosarch v0.0.1. Cosmolang Architecture Programming Language Research Labs" << std::endl;
+    std::cout << "Running Cosarch v0.0.1.103-B Cosmolang Architecture Programming Language Research Labs (CARL)"
+              << std::endl;
     if (argc != 2) {
         std::cerr << "Incorrect usage. Correct usage is..." << std::endl;
-        std::cerr << "cosarch <input.cos>" << std::endl;
+        std::cerr << "./cosarch ./<input.cos>" << std::endl;
         return EXIT_FAILURE;
     }
 
@@ -37,7 +39,8 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    if (!system("rm -fr ../data && mkdir -p ../data")) {} // Why? Because the IDE doesn't like only the system()
+    if (!system(("rm -fr f " + output + " && mkdir -p " +
+                 output).c_str())) {} // Why? Because the IDE doesn't like only the system()
 
     Tokenizer tokenizer(std::move(contents));
     std::vector<Token> tokens = tokenizer.tokenize();
@@ -52,11 +55,12 @@ int main(int argc, char *argv[]) {
 
     Generator generator(prog.value());
     {
-        std::fstream file("../data/out.asm", std::ios::out);
+        std::fstream file(output + "/out.asm", std::ios::out);
         file << generator.gen_prog();
     }
 
-    if (system("nasm -f elf64 ../data/out.asm -o ../data/out.o && ld ../data/out.o -o ../data/out")) {}
+    if (system(("nasm -f elf64 " + output + "/out.asm -o " + output + "/out.o && ld " + output + "/out.o -o " + output +
+                "/out").c_str())) {}
 
     std::cout << "Compiling successfully. File build: " << argv[1] << std::endl;
 
