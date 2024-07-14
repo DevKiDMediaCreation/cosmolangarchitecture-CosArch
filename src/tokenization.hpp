@@ -2,11 +2,25 @@
 
 #include <string>
 #include <vector>
-
+#include "utils/log.hpp"
 
 enum class TokenType {
-    _return, exit, int_lit, semi
+    exit, int_lit, semi, open_paren, close_paren, ident, let, eq, plus, star, minus, div, open_curly, close_curly
 };
+
+std::optional<int> bin_prec(TokenType type) {
+    switch (type) {
+        case TokenType::plus:
+        case TokenType::minus:
+            return 0;
+        case TokenType::star:
+        case TokenType::div:
+            return 1;
+        default:
+            return {};
+    }
+}
+
 
 struct Token {
     TokenType type;
@@ -15,58 +29,91 @@ struct Token {
 
 class Tokenizer {
 public:
-    inline explicit Tokenizer(std::string src) : m_src(std::move(src)) {
-
+    inline explicit Tokenizer(std::string src)
+            : m_src(std::move(src)) {
     }
 
     inline std::vector<Token> tokenize() {
         std::vector<Token> tokens;
         std::string buf;
-        while (peak().has_value()) {
-            if (std::isalpha(peak().value())) {
+        while (peek().has_value()) {
+            if (std::isalpha(peek().value())) {
                 buf.push_back(consume());
-                while (peak().has_value() && std::isalnum(peak().value())) {
+                while (peek().has_value() && std::isalnum(peek().value())) {
                     buf.push_back(consume());
                 }
                 if (buf == "exit") {
                     tokens.push_back({.type = TokenType::exit});
                     buf.clear();
-                    continue;
+                } else if (buf == "let") {
+                    tokens.push_back({.type = TokenType::let});
+                    buf.clear();
                 } else {
-                    std::cerr << "Syntax error. This error msg is very helpfully." << std::endl;
-                    exit(EXIT_FAILURE);
+                    tokens.push_back({.type = TokenType::ident, .value = buf});
+                    buf.clear();
                 }
-            } else if (std::isdigit(peak().value())) {
+            } else if (std::isdigit(peek().value())) {
                 buf.push_back(consume());
-                while (peak().has_value() && std::isdigit(peak().value())) {
+                while (peek().has_value() && std::isdigit(peek().value())) {
                     buf.push_back(consume());
                 }
                 tokens.push_back({.type = TokenType::int_lit, .value = buf});
                 buf.clear();
-                continue;
-            } else if (peak().value() == ';') {
+
+            }
+            else if (peek().value() == '/' && peek(1).value() == '/') {
+                while (peek().value() != '\n') {
+                    consume();
+                }
+            }
+            else if (peek().value() == '(') {
+                consume();
+                tokens.push_back({.type = TokenType::open_paren});
+            } else if (peek().value() == ')') {
+                consume();
+                tokens.push_back({.type = TokenType::close_paren});
+            } else if (peek().value() == ';') {
                 consume();
                 tokens.push_back({.type = TokenType::semi});
-                continue;
-            } else if (std::isspace(peak().value())) {
+            } else if (peek().value() == '=') {
                 consume();
-                continue;
+                tokens.push_back({.type = TokenType::eq});
+            } else if (peek().value() == '+') {
+                consume();
+                tokens.push_back({.type = TokenType::plus});
+            } else if (peek().value() == '*') {
+                consume();
+                tokens.push_back({.type = TokenType::star});
+            } else if (peek().value() == '-') {
+                consume();
+                tokens.push_back({.type = TokenType::minus});
+            } else if (peek().value() == '/') {
+                consume();
+                tokens.push_back({.type = TokenType::div});
+            } else if (peek().value() == '{') {
+                consume();
+                tokens.push_back({.type = TokenType::open_curly});
+            } else if (peek().value() == '}') {
+                consume();
+                tokens.push_back({.type = TokenType::close_curly});
+            } else if (std::isspace(peek().value()) || peek().value() == '\n' || peek().value() == '\r') {
+                consume();
             } else {
-                std::cerr << "Syntax error. This error msg is very helpfully." << std::endl;
+                Log::error(1029, "Char: " + std::string(1, peek().value()));
                 exit(EXIT_FAILURE);
             }
         }
-        std::cout << "Tokenization complete." << std::endl;
         m_index = 0;
         return tokens;
     }
 
 private:
-    [[nodiscard]] inline std::optional<char> peak(int ahead = 1) const {
-        if (m_index + ahead > m_src.length()) {
+    [[nodiscard]] inline std::optional<char> peek(int offset = 0) const {
+        if (m_index + offset >= m_src.length()) {
             return {};
+        } else {
+            return m_src.at(m_index + offset);
         }
-        return m_src.at(m_index);
     }
 
     inline char consume() {

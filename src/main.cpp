@@ -1,22 +1,24 @@
-//
-// Create by DevKiD 15.09.2023
-//
-#include <iostream>
 #include <fstream>
-#include <sstream>
+#include <iostream>
 #include <optional>
+#include <sstream>
 #include <vector>
+#include <chrono>
 
-#include "./parser.hpp"
 #include "./tokenization.hpp"
+#include "./parser.hpp"
 #include "./generation.hpp"
-
+#include "./utils/log.hpp"
 
 int main(int argc, char *argv[]) {
-    std::cout << "Running Cosarch v0.0.1. Cosmolang Architecture Programming Language Research Labs" << std::endl;
-    if (argc != 2) { // < 2
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+
+    // Add ipl
+
+    if (argc != 2) {
         std::cerr << "Incorrect usage. Correct usage is..." << std::endl;
-        std::cerr << "cosarch <input.cos>" << std::endl;
+        std::cerr << "cosmolingua <input.cl>" << std::endl;
+        Log::error(1948);
         return EXIT_FAILURE;
     }
 
@@ -26,37 +28,42 @@ int main(int argc, char *argv[]) {
         std::fstream input(argv[1], std::ios::in);
         contents_stream << input.rdbuf();
         contents = contents_stream.str();
-
         if (contents.empty()) {
-            std::cerr << "File is empty." << std::endl;
+            Log::error(2054);
             return EXIT_FAILURE;
         }
     }
-
-    system("rm -fr ../data && mkdir -p ../data");
+    std::cout << "Reading successfully." << std::endl;
 
     Tokenizer tokenizer(std::move(contents));
     std::vector<Token> tokens = tokenizer.tokenize();
+    std::cout << "AST and Tokenization successfully." << std::endl;
 
     // Integrate Cosmolang Linker and Cosmolang Assembler ICL and ICA
     Parser parser(std::move(tokens));
-    std::optional<NodeExit> tree = parser.parse();
-    if (!tree.has_value()) {
-        std::cerr << "No exit statement found" << std::endl;
+    std::optional<NodeProg> prog = parser.parse_prog();
+    std::cout << "Parsing successfully." << std::endl;
+
+    if (!prog.has_value()) {
+        Log::error(2301);
         exit(EXIT_FAILURE);
     }
 
-    Generator generator(tree.value());
+    Generator generator(prog.value());
     {
-        std::fstream file("../data/out.asm", std::ios::out);
-        file << generator.generate();
+        std::fstream file("output.asm", std::ios::out);
+        file << generator.gen_prog();
     }
+    std::cout << "Generation successfully." << std::endl;
 
-    system("nasm -f elf64 ../data/out.asm -o ../data/out.o && ld ../data/out.o -o ../data/out");
+    // Later add Integrate Cosmolang Linker and Cosmolang Assembler ICL and ICA And ICO (Integrate Cosmolang Object)
+    system("nasm -f elf64 output.asm -o output.o && ld output.o -o output");
+    std::cout << "Linking and Assembling successfully. (Build)" << std::endl;
 
-    std::cout << "Compiling successfully. File build: " << argv[1] << std::endl;
 
-    return EXIT_SUCCESS;
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::cout << "Compilation Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
+              << "ms" << std::endl;
+
+    return 0;
 }
-
-// Create by DevKiD 15.09.2023
