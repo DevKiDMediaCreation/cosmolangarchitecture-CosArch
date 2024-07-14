@@ -1,0 +1,22 @@
+let x = (10 - 2 * 3) / 2 + (3+(4 - 1) * 7) + 4;
+let y = (x + x * 2) / 3 - 2;
+let z = (x + y) / (x - y);
+let a = (x + y) / (x - y) + 1;
+let alpha = (x + y) / (x - y) + 1 + a - z * 3;
+
+{
+    let asd = 1;
+    {
+        let asf = 2;
+        let asf1 = 2;
+        let asf2 = 2;
+        let asf3 = 2;
+        let asf4 = 2;
+        let asf5 = 2;
+        let asf6 = 2;
+        let asf7 = 2;
+    }
+}
+let asd = 235;
+
+exit(alpha);
