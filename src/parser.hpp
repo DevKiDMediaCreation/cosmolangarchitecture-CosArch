@@ -63,12 +63,17 @@ struct NodeStmtLet {
 
 struct NodeStmt;
 
-struct NodeStmtScope {
+struct NodeScope {
     std::vector<NodeStmt *> stmts;
 };
 
+struct NodeStmtIf {
+    NodeExpr *expr;
+    NodeScope *scope;
+};
+
 struct NodeStmt {
-    std::variant<NodeStmtExit *, NodeStmtLet *, NodeStmtScope *> var;
+    std::variant<NodeStmtExit *, NodeStmtLet *, NodeScope *, NodeStmtIf *> var;
 };
 
 struct NodeProg {
@@ -161,7 +166,7 @@ public:
                 multi->lhs = expr_lhs_cache;
                 multi->rhs = expr_rhs.value();
                 expr->var = multi;
-            } else if (op.type == TokenType::div) {
+            } else if (op.type == TokenType::fslash) {
                 auto div = m_allocator.alloc<NodeBinExprDiv>();
                 expr_lhs_cache->var = expr_lhs->var;
                 div->lhs = expr_lhs_cache;
@@ -175,6 +180,28 @@ public:
             expr_lhs->var = expr;
         }
         return expr_lhs;
+    }
+
+    std::optional<NodeScope *> parse_scope() {
+        if (!try_consume(TokenType::open_curly).has_value()) {
+            return {};
+        }
+
+        // TODO: Checking if the code is usefully working
+        auto scope = m_allocator.alloc<NodeScope>();
+        /*while (peek().has_value() && peek().value().type != TokenType::close_curly) {
+            if (auto stmt = parse_stmt()) {
+                scope->stmts.push_back(stmt.value());
+            } else {
+                Log::error(2302,
+                           "Unclear statement. Probably accessing a variable that is not declared in the scope of the statement.");
+            }
+        }*/
+        while(auto stmt = parse_stmt()) {
+            scope->stmts.push_back(stmt.value());
+        }
+        try_consume(TokenType::close_curly, "Expected `}`");
+        return scope;
     }
 
     std::optional<NodeStmt *> parse_stmt() {
@@ -212,25 +239,36 @@ public:
             auto stmt = m_allocator.alloc<NodeStmt>();
             stmt->var = stmt_let;
             return stmt;
-        }
-        else if (auto open_curly = try_consume(TokenType::open_curly)) {
-            auto stmt_scope = m_allocator.alloc<NodeStmtScope>();
-            while (peek().has_value() && peek().value().type != TokenType::close_curly) {
-                if (auto stmt = parse_stmt()) {
-                    stmt_scope->stmts.push_back(stmt.value());
-                } else {
-                    Log::error(2302, "Unclear statement. Probably accessing a variable that is not declared in the scope of the statement.");
-                }
+        } else if (peek().has_value() && peek().value().type == TokenType::open_curly) {
+            if(auto scope = parse_scope()) {
+                auto stmt = m_allocator.alloc<NodeStmt>();
+                stmt->var = scope.value();
+                return stmt;
+            } else {
+                Log::error(4572, "Invalid statement. Scope Error.");
             }
-            try_consume(TokenType::close_curly, "Expected `}`");
-            auto stmt = m_allocator.alloc<NodeStmt>();
-            stmt->var = stmt_scope;
-            return stmt;
-        }
+        } else if (auto if_ = try_consume(TokenType::if_)) {
+            try_consume(TokenType::open_paren, "Expected `(`");
+            auto stmt_if = m_allocator.alloc<NodeStmtIf>();
+            if (auto expr = parse_expr()) {
+                stmt_if->expr = expr.value();
+            } else {
+                Log::error(3957, "Unable to parse expression");
+            }
+            try_consume(TokenType::close_paren, "Expected `)`");
 
-        else {
+            if (auto scope = parse_scope()) {
+                stmt_if->scope = scope.value();
+            } else {
+                Log::error(4572, "Invalid statement. Scope is not valid.");
+            }
+            auto stmt = m_allocator.alloc<NodeStmt>();
+            stmt->var = stmt_if;
+            return stmt;
+        } else {
             return {};
         }
+        return {};
     }
 
     std::optional<NodeProg> parse_prog() {
@@ -239,7 +277,7 @@ public:
             if (auto stmt = parse_stmt()) {
                 prog.stmts.push_back(stmt.value());
             } else {
-                Log::error(2302);
+                Log::error(2302, "Program contains invalid statement. Program generation failed.");
             }
         }
         return prog;
@@ -262,7 +300,7 @@ private:
         if (peek().has_value() && peek().value().type == type) {
             return consume();
         } else {
-            std::cerr << err_msg << std::endl;
+            Log::error(1029, err_msg);
             exit(EXIT_FAILURE);
         }
     }

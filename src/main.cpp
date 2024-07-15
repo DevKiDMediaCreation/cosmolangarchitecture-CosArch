@@ -61,12 +61,20 @@ int main(int argc, char *argv[]) {
     }
     std::cout << "Generation successfully." << std::endl;
     Log::add("Generation successfully.");
+    Log::addSuccess("Generation of Program successfully.");
+
+    // Check if nasm is installed
+    if (system("nasm -v") != 0) {
+        Log::error(7768, "nasm is not installed. Please install nasm.");
+    }
+    Log::addInfo("Nasm is installed");
+
+    Log::addWarning("NASM program only works on Linux. Please use WSL or Linux to run the program.");
 
     // Later add Integrate Cosmolang Linker and Cosmolang Assembler ICL and ICA And ICO (Integrate Cosmolang Object)
     system("nasm -f elf64 output.asm -o output.o && ld output.o -o output");
     std::cout << "Linking and Assembling successfully. (Build)" << std::endl;
     Log::add("Build successfully.");
-
 
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Compilation Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()

@@ -1,8 +1,8 @@
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.22.1) # 3.27
+project(CosmoArchitecture)
 
-project(cosmolangarchitecture)
+set(CMAKE_CXX_STANDARD 23)
 
-set(CMAKE_CXX_STANDARD 20)
-
-add_executable(cosarch src/main.cpp
-        src/generation.hpp)
+add_executable(CosmoArchitecture src/main.cpp
+        src/utils/log.cpp
+        src/utils/log.hpp)

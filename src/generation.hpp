@@ -16,6 +16,7 @@ public:
             void operator()(const NodeTermIntLit *term_int_lit) const {
                 gen->m_output << "\tmov rax, " << term_int_lit->int_lit.value.value() << "\n";
                 gen->push("rax");
+                Log::addProcess("Integer Literal: " + term_int_lit->int_lit.value.value());
             }
 
             void operator()(const NodeTermIdent *term_ident) const {
@@ -28,6 +29,8 @@ public:
                 std::stringstream offset;
                 offset << "QWORD [rsp + " << (gen->m_stack_size - (*it).stack_loc - 1) * 8 << "]";
                 gen->push(offset.str());
+
+                Log::addProcess("Identifier: " + term_ident->ident.value.value());
             }
 
             void operator()(const NodeTermParen *term_paren) const {
@@ -49,6 +52,8 @@ public:
                 gen->pop("rbx");
                 gen->m_output << "\tadd rax, rbx\n";
                 gen->push("rax");
+                Log::addProcess("Addition with RAX and RBX in " + std::to_string(add->lhs->var.index()) + " and " +
+                                std::to_string(add->rhs->var.index()));
             }
 
             void operator()(const NodeBinExprSub *sub) const {
@@ -58,6 +63,8 @@ public:
                 gen->pop("rbx");
                 gen->m_output << "\tsub rax, rbx\n";
                 gen->push("rax");
+                Log::addProcess("Subtraction with RAX and RBX in " + std::to_string(sub->lhs->var.index()) + " and " +
+                                std::to_string(sub->rhs->var.index()));
             }
 
 
@@ -68,6 +75,9 @@ public:
                 gen->pop("rbx");
                 gen->m_output << "\tmul rbx\n";
                 gen->push("rax");
+                Log::addProcess(
+                        "Multiplication with RAX and RBX in " + std::to_string(multi->lhs->var.index()) + " and " +
+                        std::to_string(multi->rhs->var.index()));
             }
 
             void operator()(const NodeBinExprDiv *div) const {
@@ -77,6 +87,8 @@ public:
                 gen->pop("rbx");
                 gen->m_output << "\tdiv rbx\n";
                 gen->push("rax");
+                Log::addProcess("Division with RAX and RBX in " + std::to_string(div->lhs->var.index()) + " and " +
+                                std::to_string(div->rhs->var.index()));
             }
         };
 
@@ -101,6 +113,15 @@ public:
         std::visit(visitor, expr->var);
     }
 
+    void gen_scope(const NodeScope *scope) {
+        begin_scope();
+        for (const NodeStmt *stmt: scope->stmts) {
+            gen_stmt(stmt);
+        }
+        end_scope();
+        Log::addProcess("Scope");
+    }
+
     void gen_stmt(const NodeStmt *stmt) {
         struct StmtVisitor {
             Generator *gen;
@@ -110,6 +131,7 @@ public:
                 gen->m_output << "\tmov rax, 60\n";
                 gen->pop("rdi");
                 gen->m_output << "\tsyscall\n";
+                Log::addProcess("Exit with RDI");
             }
 
             void operator()(const NodeStmtLet *stmt_let) const {
@@ -122,14 +144,23 @@ public:
 
                 gen->m_vars.push_back({.name = stmt_let->ident.value.value(), .stack_loc = gen->m_stack_size});
                 gen->gen_expr(stmt_let->expr);
+                Log::addProcess("Let Identifier: " + stmt_let->ident.value.value());
             }
 
-            void operator()(const NodeStmtScope *scope) const {
-                gen->begin_scope();
-                for (const NodeStmt *stmt: scope->stmts) {
-                    gen->gen_stmt(stmt);
-                }
-                gen->end_scope();
+            void operator()(const NodeScope *scope) const {
+                gen->gen_scope(scope);
+            }
+
+            void operator()(const NodeStmtIf *stmt_if) const {
+                gen->gen_expr(stmt_if->expr);
+                gen->pop("rax");
+                std::string label = gen->create_label();
+                gen->m_output << "\ttest rax, rax\n";
+                gen->m_output << "\tjz " << label << "\n";
+                gen->gen_scope(stmt_if->scope);
+                gen->m_output << label << ":\n";
+
+                Log::addProcess("If Statement of " + std::to_string(stmt_if->expr->var.index()));
             }
         };
 
@@ -154,15 +185,18 @@ private:
     void push(const std::string &reg) {
         m_output << "\tpush " << reg << "\n";
         m_stack_size++;
+        Log::addProcess("Stack Size: " + std::to_string(m_stack_size) + " Register: " + reg);
     }
 
     void pop(const std::string &reg) {
         m_output << "\tpop " << reg << "\n";
         m_stack_size--;
+        Log::addProcess("Stack Size: " + std::to_string(m_stack_size) + " Register: " + reg);
     }
 
     void begin_scope() {
         m_scopes.push_back(m_vars.size());
+        Log::addProcess("Scope Size: " + std::to_string(m_vars.size()) + ". Begin Scope.");
     }
 
     void end_scope() {
@@ -174,6 +208,11 @@ private:
             m_vars.pop_back();
         }
         m_scopes.pop_back();
+        Log::addProcess("Scope Size: " + std::to_string(m_vars.size()) + ". End Scope.");
+    }
+
+    std::string create_label() {
+        return ".L" + std::to_string(m_label_count++);
     }
 
     struct Var {
@@ -185,4 +224,5 @@ private:
     size_t m_stack_size = 0;
     std::vector<Var> m_vars{};
     std::vector<size_t> m_scopes{};
+    int m_label_count = 0;
 };

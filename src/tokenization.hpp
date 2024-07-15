@@ -5,7 +5,7 @@
 #include "utils/log.hpp"
 
 enum class TokenType {
-    exit, int_lit, semi, open_paren, close_paren, ident, let, eq, plus, star, minus, div, open_curly, close_curly
+    exit, int_lit, semi, open_paren, close_paren, ident, let, eq, plus, star, minus, fslash, open_curly, close_curly, if_
 };
 
 std::optional<int> bin_prec(TokenType type) {
@@ -14,7 +14,7 @@ std::optional<int> bin_prec(TokenType type) {
         case TokenType::minus:
             return 0;
         case TokenType::star:
-        case TokenType::div:
+        case TokenType::fslash:
             return 1;
         default:
             return {};
@@ -48,6 +48,9 @@ public:
                 } else if (buf == "let") {
                     tokens.push_back({.type = TokenType::let});
                     buf.clear();
+                } else if (buf == "if") {
+                    tokens.push_back({.type = TokenType::if_});
+                    buf.clear();
                 } else {
                     tokens.push_back({.type = TokenType::ident, .value = buf});
                     buf.clear();
@@ -60,13 +63,11 @@ public:
                 tokens.push_back({.type = TokenType::int_lit, .value = buf});
                 buf.clear();
 
-            }
-            else if (peek().value() == '/' && peek(1).value() == '/') {
+            } else if (peek().value() == '/' && peek(1).value() == '/') {
                 while (peek().value() != '\n') {
                     consume();
                 }
-            }
-            else if (peek().value() == '(') {
+            } else if (peek().value() == '(') {
                 consume();
                 tokens.push_back({.type = TokenType::open_paren});
             } else if (peek().value() == ')') {
@@ -89,7 +90,7 @@ public:
                 tokens.push_back({.type = TokenType::minus});
             } else if (peek().value() == '/') {
                 consume();
-                tokens.push_back({.type = TokenType::div});
+                tokens.push_back({.type = TokenType::fslash});
             } else if (peek().value() == '{') {
                 consume();
                 tokens.push_back({.type = TokenType::open_curly});
