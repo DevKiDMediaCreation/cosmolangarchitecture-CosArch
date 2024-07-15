@@ -22,6 +22,8 @@ int main(int argc, char *argv[]) {
         return EXIT_FAILURE;
     }
 
+    Log::add("Starting Cosmolang Architecture Compiler");
+
     std::string contents;
     {
         std::stringstream contents_stream;
@@ -34,15 +36,18 @@ int main(int argc, char *argv[]) {
         }
     }
     std::cout << "Reading successfully." << std::endl;
+    Log::add("Reading successfully.");
 
     Tokenizer tokenizer(std::move(contents));
     std::vector<Token> tokens = tokenizer.tokenize();
     std::cout << "AST and Tokenization successfully." << std::endl;
+    Log::add("AST and Tokenization successfully.");
 
     // Integrate Cosmolang Linker and Cosmolang Assembler ICL and ICA
     Parser parser(std::move(tokens));
     std::optional<NodeProg> prog = parser.parse_prog();
     std::cout << "Parsing successfully." << std::endl;
+    Log::add("Parsing successfully.");
 
     if (!prog.has_value()) {
         Log::error(2301);
@@ -55,15 +60,19 @@ int main(int argc, char *argv[]) {
         file << generator.gen_prog();
     }
     std::cout << "Generation successfully." << std::endl;
+    Log::add("Generation successfully.");
 
     // Later add Integrate Cosmolang Linker and Cosmolang Assembler ICL and ICA And ICO (Integrate Cosmolang Object)
     system("nasm -f elf64 output.asm -o output.o && ld output.o -o output");
     std::cout << "Linking and Assembling successfully. (Build)" << std::endl;
+    Log::add("Build successfully.");
 
 
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Compilation Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count()
               << "ms" << std::endl;
+
+    Log::createFile();
 
     return 0;
 }
