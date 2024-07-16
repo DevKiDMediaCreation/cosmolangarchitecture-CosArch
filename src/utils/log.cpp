@@ -39,7 +39,6 @@ std::vector<Log::_log> Log::process;
 
 auto Log::getTimeInNS() {
     auto now = std::chrono::system_clock::now();
-    auto nowAsTimeT = std::chrono::system_clock::to_time_t(now);
     auto nowNs = std::chrono::duration_cast<std::chrono::nanoseconds>(now.time_since_epoch()) % 1000000000;
     return nowNs.count();
 }

@@ -103,8 +103,7 @@ public:
         } else if (auto open_paren = try_consume(TokenType::open_paren)) {
             auto expr = parse_expr();
             if (!expr.has_value()) {
-                std::cerr << "Expected expression. Paren Expression Error. Error-Code: #3956" << std::endl;
-                exit(EXIT_FAILURE);
+                Log::error(3956, "Expected expression. Paren Expression Error.");
             }
             try_consume(TokenType::close_paren, "Expected `)`");
             auto term_paren = m_allocator.alloc<NodeTermParen>();
@@ -142,8 +141,7 @@ public:
             int next_min_prec = prec.value() + 1;
             auto expr_rhs = parse_expr(next_min_prec);
             if (!expr_rhs.has_value()) {
-                std::cerr << "Unable to parse expression. Error-Code: #9983" << std::endl;
-                exit(EXIT_FAILURE);
+                Log::error(9983, "Unable to parse expression");
             }
 
             auto expr = m_allocator.alloc<NodeBinExpr>();
@@ -174,8 +172,7 @@ public:
                 expr->var = div;
             } else {
                 // Unreachable
-                std::cerr << "Unreachable: Invalid Binary Expression. Error-Code: #9984" << std::endl;
-                exit(EXIT_FAILURE);
+                Log::error(9984, "Unreachable: Invalid Binary Expression");
             }
             expr_lhs->var = expr;
         }
@@ -213,8 +210,7 @@ public:
             if (auto node_expr = parse_expr()) {
                 stmt_exit->expr = node_expr.value();
             } else {
-                std::cerr << "Invalid expression. Exit-Code Paran Expression Error. Error-Code: # 4568" << std::endl;
-                exit(EXIT_FAILURE);
+                Log::error(4568, "Invalid expression. Exit-Code Paran Expression Error");
             }
             try_consume(TokenType::close_paren, "Expected `)`");
             try_consume(TokenType::semi, "Expected `;`");
@@ -232,8 +228,7 @@ public:
             if (auto expr = parse_expr()) {
                 stmt_let->expr = expr.value();
             } else {
-                std::cerr << "Invalid expression. Ident Error. Error-Code: #4569" << std::endl;
-                exit(EXIT_FAILURE);
+                Log::error(4569, "Invalid expression. Ident Error");
             }
             try_consume(TokenType::semi, "Expected `;`");
             auto stmt = m_allocator.alloc<NodeStmt>();

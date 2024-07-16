@@ -51,7 +51,6 @@ int main(int argc, char *argv[]) {
 
     if (!prog.has_value()) {
         Log::error(2301);
-        exit(EXIT_FAILURE);
     }
 
     Generator generator(prog.value());
@@ -69,7 +68,7 @@ int main(int argc, char *argv[]) {
     }
     Log::addInfo("Nasm is installed");
 
-    Log::addWarning("NASM program only works on Linux. Please use WSL or Linux to run the program.");
+    Log::addWarning("NASM's program only works on Linux. Please use WSL or Linux to run the program.");
 
     // Later add Integrate Cosmolang Linker and Cosmolang Assembler ICL and ICA And ICO (Integrate Cosmolang Object)
     system("nasm -f elf64 output.asm -o output.o && ld output.o -o output");

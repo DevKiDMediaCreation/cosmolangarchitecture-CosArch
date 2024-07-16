@@ -5,7 +5,23 @@
 #include "utils/log.hpp"
 
 enum class TokenType {
-    exit, int_lit, semi, open_paren, close_paren, ident, let, eq, plus, star, minus, fslash, open_curly, close_curly, if_
+    exit,
+    int_lit,
+    semi,
+    open_paren,
+    close_paren,
+    ident,
+    let,
+    eq,
+    plus,
+    star,
+    minus,
+    fslash,
+    open_curly,
+    close_curly,
+    if_,
+    else_,
+    while_
 };
 
 std::optional<int> bin_prec(TokenType type) {
@@ -51,6 +67,12 @@ public:
                 } else if (buf == "if") {
                     tokens.push_back({.type = TokenType::if_});
                     buf.clear();
+                } else if (buf == "else") {
+                    tokens.push_back({.type = TokenType::else_});
+                    buf.clear();
+                }else if (buf == "while") {
+                    tokens.push_back({.type = TokenType::while_});
+                    buf.clear();
                 } else {
                     tokens.push_back({.type = TokenType::ident, .value = buf});
                     buf.clear();
@@ -63,10 +85,32 @@ public:
                 tokens.push_back({.type = TokenType::int_lit, .value = buf});
                 buf.clear();
 
-            } else if (peek().value() == '/' && peek(1).value() == '/') {
+            } else if (peek().value() == '/' && peek(1).has_value() && peek(1).value() == '/') {
                 while (peek().value() != '\n') {
                     consume();
                 }
+            } else if (peek().value() == '/' && peek(1).has_value() && peek(1).value() == '*') {
+                consume();
+                while (!(peek().has_value() && peek(1).has_value() && peek().value() == '*' &&
+                         peek(1).value() == '/')) {
+                    consume();
+                    buf.push_back(peek().value());
+                    // Check if file ends before comment is closed
+                    if (!peek().has_value() || !peek(1).has_value()) {
+                        Log::error(1029, "Comment not closed");
+                    }
+                }
+                Log::addProcess("Comment: " + buf);
+                /* Check if file ends before comment is closed
+                if (peek().has_value() && peek(1).has_value()) {
+                    consume(); // Consume '*' at the end of the comment
+                    consume(); // Consume '/' to officially close the comment
+                }*/
+
+                // Comment must be closed
+                consume(); // Consume '*' at the end of the comment
+                consume(); // Consume '/' to officially close the comment
+                buf.clear();
             } else if (peek().value() == '(') {
                 consume();
                 tokens.push_back({.type = TokenType::open_paren});

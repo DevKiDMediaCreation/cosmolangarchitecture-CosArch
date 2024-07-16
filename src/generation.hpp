@@ -20,14 +20,14 @@ public:
             }
 
             void operator()(const NodeTermIdent *term_ident) const {
-                auto it = std::find_if(gen->m_vars.cbegin(), gen->m_vars.cend(), [&](const Var &var) {
+                auto it = std::ranges::find_if(gen->m_vars.cbegin(), gen->m_vars.cend(), [&](const Var &var) {
                     return var.name == term_ident->ident.value.value();
                 });
                 if (it == gen->m_vars.cend()) {
                     Log::error(4570, "Identifier: " + term_ident->ident.value.value());
                 }
                 std::stringstream offset;
-                offset << "QWORD [rsp + " << (gen->m_stack_size - (*it).stack_loc - 1) * 8 << "]";
+                offset << "QWORD [rsp + " << (gen->m_stack_size - it->stack_loc - 1) * 8 << "]";
                 gen->push(offset.str());
 
                 Log::addProcess("Identifier: " + term_ident->ident.value.value());
@@ -135,7 +135,7 @@ public:
             }
 
             void operator()(const NodeStmtLet *stmt_let) const {
-                auto it = std::find_if(gen->m_vars.cbegin(), gen->m_vars.cend(), [&](const Var &var) {
+                auto it = std::ranges::find_if(gen->m_vars.cbegin(), gen->m_vars.cend(), [&](const Var &var) {
                     return var.name == stmt_let->ident.value.value();
                 });
                 if (it != gen->m_vars.cend()) {
